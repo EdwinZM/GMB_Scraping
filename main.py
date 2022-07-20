@@ -65,12 +65,11 @@ def home():
                             
 
                         name = result.get_attribute("aria-label")
-                        print(name)
                         result.send_keys(Keys.RETURN)
-                        try:
-                            time.sleep(2)
-                        except IndexError:
-                            time.sleep(3.5)
+                        # try:
+                        time.sleep(2)
+                        # except IndexError:
+                        #     time.sleep(3.5)
                         
                         try:
                             try:
@@ -83,7 +82,12 @@ def home():
                                     phone = driver.find_elements_by_class_name('Io6YTe')[-3]
                                     is_number = int(phone.text[0])
                                 except: 
-                                        phone = driver.find_elements_by_class_name('Io6YTe')[-4]
+                                    try:
+                                        phone = driver.find_elements_by_class_name('Io6YTe')[-4]                                  
+                                        is_number = int(phone.text[0])
+                                    except:
+                                        phone = driver.find_elements_by_class_name('Io6YTe')[-5] 
+
 
                                 claiming_btn = driver.find_elements_by_class_name('Io6YTe')[-1]
                                 claim_txt = claiming_btn.text
@@ -97,9 +101,34 @@ def home():
                         except: 
                             continue
 
-                        print(phone.text)
-                        all_results.append(result)
-                        parsed_results.append([name, phone.text])
+                        def append_full_results():
+                            print(name)
+                            print(phone.text)
+                            all_results.append(result)
+                            parsed_results.append([name, phone.text])
+
+                        # if len(parsed_results) != 0:
+                        #     for p_res in parsed_results:
+
+                        #         if phone.text in p_res:
+                        #             print(f"repeated results {phone.text}, {p_res[0]}")
+                        #             break
+                        #         else:
+                        #             append_full_results()
+                        # else:
+                        #     append_full_results()
+
+                        index = len(parsed_results) - 1
+
+                        if index >= 0:
+                            if phone.text == parsed_results[index][1]:
+                                print(f"repeated results {phone.text}, {name}")
+                                continue
+                            else:
+                                append_full_results()
+                        else:
+                            append_full_results()
+                            
                     
                     next = driver.find_element_by_xpath('//*[@id="eY4Fjd"]')
                     next.send_keys(Keys.RETURN)
@@ -143,7 +172,7 @@ def home():
                 writer.writerows(unclaimed_results)
 
 
-        return redirect("/results")
+        return redirect("/results") 
     
     return render_template("index.html", error=error)
 
@@ -161,6 +190,10 @@ def search():
             result.append(row)
 
     return render_template("results.html", file = FILE_PATH, results = result)
+
+@app.route("/download")
+def download():
+    return redirect("/results")
 
 if __name__ == "__main__":
     app.run(debug=True)
