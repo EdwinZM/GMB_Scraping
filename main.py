@@ -6,13 +6,14 @@ from selenium.common.exceptions import NoSuchElementException
 from urllib3.exceptions import NewConnectionError, MaxRetryError
 import time
 import csv
+import pandas
 
 chromedriver_autoinstaller.install()
 
 chrome_options = webdriver.ChromeOptions()
 # chrome_options.add_argument("--headless")
 
-
+FILE_PATH = "./static/results.csv"
 
 app = Flask(__name__)
 
@@ -29,7 +30,7 @@ def home():
         claimed_results = []
         unclaimed_results = []
 
-        with open("./static/results.csv", "w") as file:
+        with open(FILE_PATH, "w") as file:
             writer = csv.writer(file)
             writer.writerow(["name", " phone"])
         
@@ -51,7 +52,6 @@ def home():
                 for i in range(10):
                     body.send_keys(Keys.PAGE_DOWN)
                         
-            # time.sleep(2)
             scroll()
 
             failed_i = 0
@@ -83,11 +83,7 @@ def home():
                                     phone = driver.find_elements_by_class_name('Io6YTe')[-3]
                                     is_number = int(phone.text[0])
                                 except: 
-                                    # try:
                                         phone = driver.find_elements_by_class_name('Io6YTe')[-4]
-                                    #     is_number = int(phone.text[0])
-                                    # except:
-                                    #     phone = driver.find_elements_by_class_name('Io6YTe')[-5]  
 
                                 claiming_btn = driver.find_elements_by_class_name('Io6YTe')[-1]
                                 claim_txt = claiming_btn.text
@@ -117,23 +113,13 @@ def home():
 
                     failed_i += 1
 
-                    if failed_i == 10:
+                    if failed_i == 15:
                         break
-                # else:
-                #     raise Exception
+
             driver.quit()
             print(f"All results:\n{all_results}")
             print(f"Claimed results:\n{claimed_results}")
             print(f"Unclaimed results:\n{unclaimed_results}")
-
-           
-        # except NewConnectionError as e:
-        #     driver.quit()
-        #     print(e)
-
-        # except MaxRetryError as e:
-        #     driver.quit()
-        #     print(e)
 
         except Exception as e: 
             driver.quit()
@@ -144,36 +130,37 @@ def home():
             writer = csv.writer(file)
         
             if type == "All / Todo":
-                # type_results = all_results
-
-
                 
                 writer.writerows(parsed_results)
                
 
             elif type == "Claimed / Reclamado":
-                # type_results = claimed_results
-                # for result in claimed_results:
-                #     # file.write(f"{result[0]}, {result[1]}")
-                #     writer.writerow(result)
+
                 writer.writerows(claimed_results)
 
             elif type == "Unclaimed / No Reclamado": 
-                # type_results = unclaimed_results
-                # for result in unclaimed_results:
-                #     file.write(f"{result[0]}, {result[1]}")
-                #     # writer.writerow([result[0], result[1]])
+
                 writer.writerows(unclaimed_results)
 
 
-        return render_template("results.html")
+        return redirect("/results")
     
     return render_template("index.html", error=error)
 
 @app.route("/results", methods=["GET", "POST"])
 def search():
 
-    return render_template("results.html")
+    # pd_data = pandas.read_csv(FILE_PATH)
+    # result = pd_data.to_html(index=False)
+
+    result = []
+    with open(FILE_PATH) as file:
+        reader = csv.reader(file)
+        header = next(reader)
+        for row in reader:
+            result.append(row)
+
+    return render_template("results.html", file = FILE_PATH, results = result)
 
 if __name__ == "__main__":
     app.run(debug=True)
