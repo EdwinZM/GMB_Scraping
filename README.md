@@ -5,6 +5,7 @@ Scripting software using Python Selenium with Chrome Driver that scrapes Google 
 # Requirements
 
 - Chrome installed
+- Software for reading CSV files (Microsoft Excel, Google sheets, etc.)
 - Good internet connection for optimal function
 
 # Modules 

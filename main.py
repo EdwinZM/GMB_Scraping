@@ -1,6 +1,7 @@
+from filecmp import clear_cache
 from selenium import webdriver
 import chromedriver_autoinstaller
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, send_file
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from urllib3.exceptions import NewConnectionError, MaxRetryError
@@ -13,24 +14,30 @@ chromedriver_autoinstaller.install()
 chrome_options = webdriver.ChromeOptions()
 # chrome_options.add_argument("--headless")
 
-FILE_PATH = "./static/results.csv"
+file_path = None
+file_name = None
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    global file_name
+    global file_path
     error = None
     if request.method == "POST":      
         business = request.form["business"]
         area = request.form["area"]
         type = request.form["type"]
 
+        file_path = f"./static/{business}_{area}.csv"
+        file_name = f"{business}_{area}.csv"
+
         all_results = []
         parsed_results = []
         claimed_results = []
         unclaimed_results = []
 
-        with open(FILE_PATH, "w") as file:
+        with open(file_path, 'w+', encoding="utf-8") as file:
             writer = csv.writer(file)
             writer.writerow(["name", " phone"])
         
@@ -155,7 +162,7 @@ def home():
             error = "Something Went Wrong :("
             print(e)
 
-        with open("./static/results.csv", "a", newline="") as file:
+        with open(file_path, "a", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
         
             if type == "All / Todo":
@@ -179,21 +186,24 @@ def home():
 @app.route("/results", methods=["GET", "POST"])
 def search():
 
-    # pd_data = pandas.read_csv(FILE_PATH)
+    if file_path == None:
+        return redirect("/")
+
+    # pd_data = pandas.read_csv(file_path)
     # result = pd_data.to_html(index=False)
 
     result = []
-    with open(FILE_PATH) as file:
+    with open(file_path) as file:
         reader = csv.reader(file)
         header = next(reader)
         for row in reader:
             result.append(row)
 
-    return render_template("results.html", file = FILE_PATH, results = result)
+    return render_template("results.html", file = file_path, results = result)
 
 @app.route("/download")
 def download():
-    return redirect("/results")
+    return send_file(file_path, as_attachment=True, cache_timeout=0)
 
 if __name__ == "__main__":
     app.run(debug=True)
