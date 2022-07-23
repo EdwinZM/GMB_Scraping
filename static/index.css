@@ -30,9 +30,13 @@ header {
     border-radius: 0% !important;
 }
 
-.loading {
+/* #loading {
+    width: 35px;
+    height: 35px;
     display: none;
-}
+    background: url("./loadingimage.gif") no-repeat;
+    cursor: wait;
+} */
 
 .link {
     text-decoration: none;

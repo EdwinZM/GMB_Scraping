@@ -13,6 +13,10 @@ chromedriver_autoinstaller.install()
 
 chrome_options = webdriver.ChromeOptions()
 # chrome_options.add_argument("--headless")
+chrome_options.add_argument("--window-size=1920,1080")
+chrome_options.add_argument('--ignore-certificate-errors')
+chrome_options.add_argument('--allow-running-insecure-content')
+
 
 file_path = None
 file_name = None
@@ -129,7 +133,7 @@ def home():
 
                         if index >= 0:
                             if phone.text == parsed_results[index][1]:
-                                print(f"repeated results {phone.text}, {name}")
+                                print(f"repeated results {phone.text}, repeated: {name}, original: {parsed_results[index][0]}")
                                 continue
                             else:
                                 append_full_results()
@@ -163,21 +167,20 @@ def home():
             print(e)
 
         with open(file_path, "a", newline="", encoding="utf-8") as file:
-            writer = csv.writer(file)
-        
-            if type == "All / Todo":
+                writer = csv.writer(file)
+            
+                if type == "All / Todo":
+                    
+                    writer.writerows(parsed_results)
                 
-                writer.writerows(parsed_results)
-               
 
-            elif type == "Claimed / Reclamado":
+                elif type == "Claimed / Reclamado":
 
-                writer.writerows(claimed_results)
+                    writer.writerows(claimed_results)
 
-            elif type == "Unclaimed / No Reclamado": 
+                elif type == "Unclaimed / No Reclamado": 
 
-                writer.writerows(unclaimed_results)
-
+                    writer.writerows(unclaimed_results)
 
         return redirect("/results") 
     

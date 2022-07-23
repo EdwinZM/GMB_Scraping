@@ -4,6 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
     <link href="./static/index.css" rel="stylesheet" type="text/css">
     <title>GMB Scraping</title>
 </head>
@@ -17,7 +18,10 @@
         </div>
       {% endif %}
     <section class="container">
-        <form class="form" action="/" method="POST">
+      <!-- <div id="loading"></div> -->
+      <div id="loading" style="display:none; position: absolute !important;"><img src="../static/loadingimage.gif" alt="" /></div>
+      <div class="content">
+          <form class="form" action="/" method="POST">
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Type of Business / Tipo de Negocio</label>
               <input type="text" class="form-control" id="exampleInputEmail1" name="business">
@@ -40,17 +44,16 @@
                 </option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary">OK</button>
+            <button type="submit" class="btn btn-primary" onclick="$('#loading').show();">OK</button>
           </form>
+        </div>
     </section>
-    <!-- <div style="margin: 20px" class="loading d-flex justify-content-center">
-      <h2>Please wait / Por favor espere ...</h2>
-    </div> -->
-    <!-- <script>
-      function form_submitted() {
-        loadingMessage = document.querySelector(".loading");
-        loadingMessage.style.display = "block";
+    <!-- <script type="text/javascript">
+      function loading() {
+        document.querySelector("#loading").style.display="block";
+        document.querySelector(".content").style.display="none";
       }
     </script> -->
+
 </body>
 </html>
