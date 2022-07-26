@@ -12,7 +12,7 @@ import pandas
 chromedriver_autoinstaller.install()
 
 chrome_options = webdriver.ChromeOptions()
-# chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless")
 chrome_options.add_argument("--window-size=1920,1080")
 chrome_options.add_argument('--ignore-certificate-errors')
 chrome_options.add_argument('--allow-running-insecure-content')
@@ -33,8 +33,15 @@ def home():
         area = request.form["area"]
         type = request.form["type"]
 
-        file_path = f"./static/{business}_{area}.csv"
-        file_name = f"{business}_{area}.csv"
+        if type == "All / Todo":
+            file_type = "all"
+        elif type == "Claimed / Reclamado":
+            file_type = "claimed"
+        elif type == "Unclaimed / No Reclamado":
+            file_type = "unclaimed"
+
+        file_path = f"./static/{business}_{area}_{file_type}.csv"
+        file_name = f"{business}_{area}_{file_type}.csv"
 
         all_results = []
         parsed_results = []
