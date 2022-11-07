@@ -88,70 +88,136 @@ def home():
                         time.sleep(2)
                         # except IndexError:
                         #     time.sleep(3.5)
-                        
-                        try:
-                            try:
-                                phone = driver.find_elements_by_class_name('Io6YTe')[-2]
-                                is_number = int(phone.text[0])
-                                claimed_results.append([name, phone.text])
-                            except:
 
+                        neg_ind = -2
+                        num_ind = 0
+                        max_rec = 0
+                        phone = None
+
+                        def get_info(neg, num, max_rec):
                                 try:
-                                    phone = driver.find_elements_by_class_name('Io6YTe')[-3]
-                                    is_number = int(phone.text[0])
-                                except: 
-                                    try:
-                                        phone = driver.find_elements_by_class_name('Io6YTe')[-4]                                  
-                                        is_number = int(phone.text[0])
-                                    except:
-                                        phone = driver.find_elements_by_class_name('Io6YTe')[-5] 
+                                    phone = driver.find_elements_by_class_name('Io6YTe')[neg]
+                                    is_number = int(phone.text[num])
+                                    # claimed_results.append([name, phone.text])
+
+                                    claiming_btn = driver.find_elements_by_class_name('Io6YTe')[-1]
+                                    claim_txt = claiming_btn.text
+
+                                    if claim_txt.lower() == "claim this business" or claim_txt.lower() == "reclamar este negocio":
+                                        print("up to claim")
+                                        unclaimed_results.append([name, phone.text])
+                                    else:
+                                        claimed_results.append([name, phone.text])
+                                
+
+                                except:
+                                    neg -= 1
+                                    num += 1
+                                    max_rec += 1
+
+                                    if max_rec >= 10:
+                                        error = "Unable to find phone number :("
+                                        return error
+                                    else:
+                                        get_info(neg, num, max_rec)
+                        get_info(neg_ind, num_ind, max_rec)
+                        
+                        # try:
+
+                            
+                            # try:
+                            #     phone = driver.find_elements_by_class_name('Io6YTe')[-2]
+                            #     is_number = int(phone.text[0])
+                            #     claimed_results.append([name, phone.text])
+                            # except:
+
+                            #     try:
+                            #         phone = driver.find_elements_by_class_name('Io6YTe')[-3]
+                            #         is_number = int(phone.text[0])
+                            #     except: 
+                            #         try:
+                            #             phone = driver.find_elements_by_class_name('Io6YTe')[-4]                                  
+                            #             is_number = int(phone.text[0])
+                            #         except:
+                            #             phone = driver.find_elements_by_class_name('Io6YTe')[-5] 
 
 
-                                claiming_btn = driver.find_elements_by_class_name('Io6YTe')[-1]
-                                claim_txt = claiming_btn.text
-                                print(f"claiming text: {claim_txt}")
+                            #     claiming_btn = driver.find_elements_by_class_name('Io6YTe')[-1]
+                            #     claim_txt = claiming_btn.text
+                            #     print(f"claiming text: {claim_txt}")
 
-                                if claim_txt.lower() == "claim this business" or claim_txt.lower() == "reclamar este negocio":
-                                    print("up to claim")
-                                    unclaimed_results.append([name, phone.text])
-                                else:
-                                    claimed_results.append([name, phone.text])
-                        except: 
-                            continue
+                            #     if claim_txt.lower() == "claim this business" or claim_txt.lower() == "reclamar este negocio":
+                            #         print("up to claim")
+                            #         unclaimed_results.append([name, phone.text])
+                            #     else:
+                            #         claimed_results.append([name, phone.text])
+                        # except: 
+                        #     continue
 
                         def append_full_results():
-                            print(name)
-                            print(phone.text)
-                            all_results.append(result)
-                            parsed_results.append([name, phone.text])
+                            
+                            # print(phone.text)
+                            # for cres in claimed_results:
+                            #     parsed_results.append(cres)
+                            #     print(cres[0])
+                            #     print(cres[1])
 
-                        # if len(parsed_results) != 0:
-                        #     for p_res in parsed_results:
+                            # for ures in unclaimed_results:
+                            #     parsed_results.append(ures)
+                            #     print(ures[0])
+                            #     print(ures[1])
 
-                        #         if phone.text in p_res:
-                        #             print(f"repeated results {phone.text}, {p_res[0]}")
-                        #             break
-                        #         else:
-                        #             append_full_results()
+
+                            # if len(claimed_results) > 0 and len(unclaimed_results) > 0:
+                            #     print(name)
+                            cindex = len(claimed_results) - 1
+                            uindex = len(unclaimed_results) - 1
+                            print(cindex)
+                            print(uindex)
+
+                            def loop_results(i, res, p_results, a_results, r):
+                                if i >= 0:
+                                    if res[i] not in p_results:
+                                        p_results.append(res[i])
+                                        print(res[i][1])
+                                        a_results.append(r)
+                                    else:
+                                        print(f"{res[i]} repeated")
+                                        res.remove(res[i])
+                            
+                            loop_results(cindex, claimed_results, parsed_results, all_results, result)
+                            loop_results(uindex, unclaimed_results, parsed_results, all_results, result)
+                                        
+                                
+                                    
+
+                            
+                                        #parsed_results.append([name, phone.text])
+                        append_full_results()
+                        # index = len(parsed_results) - 1
+
+                        # if index >= 0:
+                        #     # if claimed_results[index][1] == parsed_results[index][1]:
+                        #     #     continue
+                        #     # else:
+                        #     #     append_full_results()
+                        #     # if len(unclaimed_results) > 0: 
+                        #     #     if unclaimed_results[index][1] == parsed_results[index][1]:
+                        #     #         continue
+                        #     # else:
+                        #     #     append_full_results()
+
                         # else:
                         #     append_full_results()
-
-                        index = len(parsed_results) - 1
-
-                        if index >= 0:
-                            if phone.text == parsed_results[index][1]:
-                                print(f"repeated results {phone.text}, repeated: {name}, original: {parsed_results[index][0]}")
-                                continue
-                            else:
-                                append_full_results()
-                        else:
-                            append_full_results()
+                    
+                      
                             
                     
                     next = driver.find_element_by_xpath('//*[@id="eY4Fjd"]')
                     next.send_keys(Keys.RETURN)
                     time.sleep(3)
                     print("NEXT PAGE-----------------------------")
+                    failed_i = 0
 
                 except NoSuchElementException as e:
                     print(e)
@@ -159,9 +225,12 @@ def home():
                     scroll()
 
                     failed_i += 1
+                    print(f"failed_i: {failed_i}")
 
-                    if failed_i == 15:
+                    if failed_i == 10: #15
                         break
+                else:
+                    failed_i = 0
 
             driver.quit()
             print(f"All results:\n{all_results}")
